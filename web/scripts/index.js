@@ -1,3 +1,4 @@
+
 var level = require('level');
 //var path = require('path');
 
@@ -44,20 +45,18 @@ var obf_key = "";
             let height = 0;
             let coinbase = false;
             let amount = 0;
-            let script = "";
-            let firstvarint = read_varint(deobfuscated_value);
-            height = firstvarint[0];
+            let firstvarint = decompress_varint(deobfuscated_value);
+            if (parseInt("0x"+firstvarint[0])%2==1){coinbase=true;}
+            height = parseInt("0x"+firstvarint[0])>>1;
+            pointer = firstvarint[1];
+            secondvarint = decompress_varint(subarray(deobfuscated_value, pointer,deobfuscated_value.length-1,false));
+            amount = decompress_amount( parseInt("0x"+secondvarint[0]));
             pointer += firstvarint[1];
-            secondvarint = read_varint(subarray(deobfuscated_value, pointer+1,deobfuscated_value.length-1,false));
-            amount = secondvarint[0];
-            pointer += firstvarint[1];
-            let script_type = deobfuscated_value[pointer+1] + deobfuscated_value[pointer+2];
+            type = subarray(deobfuscated_value, pointer+1,pointer+3,false);
+            //let script_type = deobfuscated_value[pointer+1] + deobfuscated_value[pointer+2];
 
-
-
-            let index = str[35] + str[36];
-            console.log('%s = %s \ntype: %s \nTx ID: %s\nIndex : %s\nDeobfucated Value: %s \nHieght: %s \nAmount: %s \nType: %s', 
-            data.key, data.value, type, tx_id, index_out, deobfuscated_value, height, amount, script_type); 
+            console.log('%s = %s \ntype: %s \nTx ID: %s\nIndex : %s\nDeobfucated Value: %s \nHieght: %s \nAmount: %s \n', 
+            data.key, data.value, type, tx_id, index_out, deobfuscated_value, height, amount); 
             //output.innerHTML = "deobfuscated_value";
             }
         });
@@ -127,4 +126,131 @@ var obf_key = "";
         console.log("xor: "+xor);
 
         return xor;
+    }
+
+    function decompress_varint(hex_str){
+        console.log("hex_str: "+hex_str);
+
+        let last = false;
+        let amount = new Array(0);
+        let most_significant = true;
+        let bit_storeA = 0;
+        let size = 0;
+        let pointer = 1;
+        let most_sig_half = 0;
+        let current = "";
+        let bit_storeB=0;
+
+        for (let i=0;i<hex_str.length;i++){
+            if (last && i%2==0){
+                break;
+            }else if(i%2==0){
+                size++;
+                let num = parseInt("0x0"+hex_str[i]);
+                console.log("size num: "+num);
+                if (num < 8){
+                    console.log("found last: "+num);
+                    last=true
+                }
+            }
+        }
+
+        pointer = size*2;
+    console.log("size: "+size);
+        
+
+        for (let i=0;i<hex_str.length;i++){
+
+            let num = parseInt("0x0"+hex_str[i]);
+            console.log("num: "+num);
+
+            if (size > 1){
+
+                if (most_significant){
+                    num = num & 7;
+                    amount.push(num);//amount= 
+                    console.log("amount after push mostsignificant: "+amount);
+                    most_significant = false;
+                }else{
+                    most_sig_half = amount[amount.length-1];
+                    console.log(most_sig_half);
+                    num++;
+                    current = most_sig_half<<4 | num;
+
+                    bit_storeB =0;
+
+                    for (let bit=0;bit<size-1;bit++){
+                        if (current%2!=0){
+                            bit_storeB+=Math.pow(2,bit);
+                        }
+                        current = current>>1;
+                    }
+                    current = current | bit_storeA<<(8-size);
+                    console.log(current);
+                    bit_storeA = bit_storeB;
+
+                    amount[amount.length-1] = current;
+                    console.log("amount after push byte: "+amount);
+                    most_significant = true;
+                    size--;
+                    
+                }
+        }else{
+            if (most_significant){
+                amount.push(num);
+                console.log("amount after push mostsignificant last byte: "+amount);
+                most_significant = false;
+            }else{
+                most_sig_half = amount[amount.length-1];
+                current = most_sig_half<<4 | num;
+                current = current | bit_storeA<<(8-size);
+                amount[amount.length-1] = current;
+                console.log("amount after push byte final: "+amount);
+
+                console.log("amount berfore str: "+amount);
+                let amount_str = "";
+                    for (let n=0;n<amount.length;n++){
+                        console.log("converting "+amount[n]+" to string")
+                        if (amount[n]<=15){
+                            amount_str += ("0"+amount[n].toString(16));
+                        }else{ 
+                            amount_str += amount[n].toString(16);
+                        }
+                        console.log("varint string: "+amount_str);
+                    }
+        
+                return [amount_str, pointer];
+                
+            }
+        }
+
+        }
+        
+    }
+
+    function decompress_amount(amount){
+        let exponent = 0;
+        if (amount == 0){
+            return 0;
+        }
+
+        amount--;
+        exponent = amount%2;
+        amount = parseInt(amount/10);
+
+        let n = 0;
+        if (exponent <9){
+            d = amount%9 +1;
+            amount = parseInt(amount/9);
+            n = amount*10 + d;
+        }else{
+            n = amount + 1;
+        }
+
+        for (let x=0;x<exponent;x++){
+            n*=10;
+        }
+
+        return n;
+
     }
