@@ -1,4 +1,5 @@
 .ipynb_checkpoints
 .env
 .dat
-
+blocks_demo/
+*/blk*.dat
