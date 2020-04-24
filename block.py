@@ -7,6 +7,7 @@ from helper import (
     int_to_little_endian,
     little_endian_to_int,
     merkle_root,
+    read_varint,
 )
 
 
@@ -18,7 +19,7 @@ LOWEST_BITS = bytes.fromhex('ffff001d')
 class Block:
 
     def __init__(self, version, prev_block, merkle_root,
-                 timestamp, bits, nonce, tx_hashes=None):
+                 timestamp, bits, nonce, tx_hashes=None,magic=None,size=None):
         self.version = version
         self.prev_block = prev_block
         self.merkle_root = merkle_root
@@ -26,6 +27,8 @@ class Block:
         self.bits = bits
         self.nonce = nonce
         self.tx_hashes = tx_hashes
+        self.magic = magic
+        self.size = size
 
     @classmethod
     def parse(cls, s):
@@ -44,7 +47,30 @@ class Block:
         # nonce - 4 bytes
         nonce = s.read(4)
         # initialize class
-        return cls(version, prev_block, merkle_root, timestamp, bits, nonce)
+        return cls(version, prev_block, merkle_root, timestamp, bits, nonce, tx_hashes)
+    
+    @classmethod
+    def parse_from_blk(cls, s):
+        '''Takes a byte stream and parses a block. Returns a Block object'''
+        # s.read(n) will read n bytes from the stream
+        magic = little_endian_to_int(s.read(4))
+        size = little_endian_to_int(s.read(4))
+        # version - 4 bytes, little endian, interpret as int
+        version = little_endian_to_int(s.read(4))
+        # prev_block - 32 bytes, little endian (use [::-1] to reverse)
+        prev_block = s.read(32)[::-1]
+        # merkle_root - 32 bytes, little endian (use [::-1] to reverse)
+        merkle_root = s.read(32)[::-1]
+        # timestamp - 4 bytes, little endian, interpret as int
+        timestamp = little_endian_to_int(s.read(4))
+        # bits - 4 bytes
+        bits = s.read(4)
+        # nonce - 4 bytes
+        nonce = s.read(4)
+        #THIS IS ADDED AT THE END.
+        tx_hashes = read_varint(s)
+        # initialize class
+        return cls(version, prev_block, merkle_root, timestamp, bits, nonce, tx_hashes, magic, size)
 
     def serialize(self):
         '''Returns the 80 byte block header'''
