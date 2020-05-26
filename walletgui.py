@@ -37,18 +37,52 @@ class SendScreen(Screen):
                             #auto_dismiss=False
                            )
         self.popupWindow.open()
+        #self.show.YES.bind(on_press=self.send_tx)
+        self.show.YES.bind(on_release=self.go_back)
+        self.show.CANCEL.bind(on_release=self.popupWindow.dismiss)
         
-    def cancel_tx(self):
+    
+    def send_tx(self,screen):
+        "the button is the Button object"
+        print(screen.show.YES.text)
+        print("SENDING TX")
+        
+    def go_back(self,button):
+        self.send_tx(self)
+        #app = WindowManager()
+        #Main = MainScreen(name="Main")
+        #app.add_widget(Main)
+        #app.switch_to(Main,direction="right")
         self.popupWindow.dismiss()
+        print("just did go bakc")
+        
         
         
 class ConfirmSendPopup(FloatLayout):
-    def checkout(self,*args):
-        if args[1]>28:
-            print("CONFIRMED")
-    pass
- 
+    def __init__(self):
+        super().__init__()
+        #self.orientation="vertical")
+        message = Label(text="Are you sure you want \nto send xx.xxx BTC to adress\n abc666lkp1233?",
+                       halign="center",size_hint= (0.6,0.3), 
+                        pos_hint={"x":0.2, "top":1}
+                       )
 
+        self.YES = Button(text="YES",
+                     pos_hint= {"x":0, "y":0.35}, 
+                     size_hint= (1,0.17),
+                          background_color=[0.5,1,0.75,1]
+                      )
+        self.CANCEL = Button(text="CANCEL",
+                     pos_hint= {"x":0, "y":-0.01}, 
+                     size_hint= (1,0.3),
+                             background_color=[1,0.3,0.3,1]
+                      )
+        self.add_widget(message)
+        self.add_widget(self.YES)
+        self.add_widget(self.CANCEL)
+    
+        
+        
 class WindowManager(ScreenManager):
     pass
 

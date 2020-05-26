@@ -245,31 +245,32 @@ WindowManager:
                     app.root.current = "Main"
                     root.manager.transition.direction = "right"  
                     
-                    
-<ConfirmSendPopup>:
-    id: confirm_tx
-    Label:
-        text: "Are you sure you want \nto send xx.xxx BTC to adress\n abc666lkp1233?"
-        halign: "center"
-        size_hint: 0.6,0.3
-        pos_hint: {"x":0.2, "top":1}
+                   
+#<ConfirmSendPopup>:
+    #id: confirm_tx
+    #Label:
+        #text: "Are you sure you want \nto send xx.xxx BTC to adress\n abc666lkp1233?"
+        #halign: "center"
+        #size_hint: 0.6,0.3
+        #pos_hint: {"x":0.2, "top":1}
         
-    Slider:
-        pos_hint: {"x":0, "y":-0.02}
-        min: 0
-        max: 30
-        step: 1
-        value_track: True
-        value_trak_color: [1,0,0,1]
-        orientation: 'horizontal'
-        on_value: 
-            root.checkout(*args)
+    #Slider:
+        #pos_hint: {"x":0, "y":-0.02}
+        #min: 0
+        #max: 30
+        #step: 1
+        #value_track: True
+        #value_trak_color: [1,0,0,1]
+        #orientation: 'horizontal'
+        #on_value: 
+            #root.checkout(*args)
             #value_trak_color: [1-args[1]/30, args[1]/30, 0, 1]
             
-                
-            
-   
+
     #Button:
+        #id: YES
         #pos_hint: {"x":0, "y":-0.02}
         #size_hint: 1,0.4
         #text: "YES"
+        #on_release: root.exit()
+        #on_release: root.root.cancel_tx()
