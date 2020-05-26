@@ -144,6 +144,7 @@ class Tx:
             inputs.append(TxIn.parse(s))
         # num_outputs is a varint, use read_varint(s)
         num_outputs = read_varint(s)
+        #print(f"outputs gggg : {num_outputs}")
         # parse num_outputs number of TxOuts
         outputs = []
         for _ in range(num_outputs):
@@ -586,7 +587,7 @@ class TxIn:
     def __repr__(self):
         return '{}:{}'.format(
             self.prev_tx.hex(),
-            self.prev_index,
+            self.prev_index
         )
 
     @classmethod
@@ -599,7 +600,11 @@ class TxIn:
         # prev_index is an integer in 4 bytes, little endian
         prev_index = little_endian_to_int(s.read(4))
         # use Script.parse to get the ScriptSig
-        script_sig = Script.parse(s)
+        try:
+            script_sig = Script.parse(s)
+        except:
+            print(f"BAD SCRIPT SIGNATURE")
+            script_sig = Script()
         # sequence is an integer in 4 bytes, little-endian
         sequence = little_endian_to_int(s.read(4))
         # return an instance of the class (see __init__ for args)
@@ -674,7 +679,11 @@ class TxOut:
         # amount is an integer in 8 bytes, little endian
         amount = little_endian_to_int(s.read(8))
         # use Script.parse to get the ScriptPubKey
-        script_pubkey = Script.parse(s)
+        try:
+            script_pubkey = Script.parse(s)
+        except:
+            print("BAD SCRIPT PUBLIC KEY.")
+            script_pubkey = Script()
         # return an instance of the class (see __init__ for args)
         return cls(amount, script_pubkey)
 

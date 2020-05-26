@@ -85,6 +85,7 @@ class Script:
         # loop until we've read length bytes
         while count < length:
             # get the current byte
+            #print(f"WHILE: count {count} and length {length}")
             current = s.read(1)
             # increment the bytes we've read
             count += 1
@@ -102,11 +103,27 @@ class Script:
             elif current_byte == 76:
                 # op_pushdata1
                 data_length = little_endian_to_int(s.read(1))
+                
+                if (data_length + count)>length:
+                    print(f"BAD SCRIPT: original script data_length {data_length} ")
+                    data_length = length-count-1
+                    print(f"Fixed script data_length to {data_length }")
+                    s.read(data_length)
+                    raise SyntaxError('parsing script failed')
+                    
                 cmds.append(s.read(data_length))
                 count += data_length + 1
             elif current_byte == 77:
                 # op_pushdata2
                 data_length = little_endian_to_int(s.read(2))
+                
+                if (data_length + count)>length:
+                    print(f"BAD SCRIPT: original script data_length {data_length} ")
+                    data_length = length-count-2
+                    print(f"Fixed script data_length to {data_length}")
+                    s.read(data_length)
+                    raise SyntaxError('parsing script failed')
+                    
                 cmds.append(s.read(data_length))
                 count += data_length + 2
             else:
