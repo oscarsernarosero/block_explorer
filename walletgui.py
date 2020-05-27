@@ -10,7 +10,8 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.config import Config
-from kivy.properties import StringProperty
+from kivy.uix.image import AsyncImage
+from kivy.properties import StringProperty,BooleanProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 Config.set('graphics','width',300)
 Config.set('graphics','height',600)
@@ -80,6 +81,42 @@ class ConfirmSendPopup(FloatLayout):
         self.add_widget(message)
         self.add_widget(self.YES)
         self.add_widget(self.CANCEL)
+        
+        
+class QRcodePopup(FloatLayout):
+    def __init__(self):
+        super().__init__()
+        #self.orientation="vertical")
+        qrcode = AsyncImage(source='https://storage.googleapis.com/support-forums-api/attachment/thread-13090132-506909745012483037.png',
+                            size_hint= (0.8, 0.8),size=(210,210),
+                            pos_hint= {'center_x':.5, 'center_y': 0.65} )
+        
+        address = Label(text="sdljfa4o8nj3o40nkqjv0dsddslg8",
+                       halign="center",size_hint= (0.6,0.25), 
+                        pos_hint={"center_x":0.5, "center_y":0.23}
+                       )
+        
+        self.OK = Button(text="OK",
+                     pos_hint= {"x":0, "y":0.01}, 
+                     size_hint= (1,0.15),
+                             background_color=[0.6,0.9,1,1]
+                      )
+        self.add_widget(qrcode)
+        self.add_widget(address)
+        self.add_widget(self.OK)
+    
+
+class ReceiveScreen(Screen):
+    def qr_popup(self):
+        self.show = QRcodePopup()
+        self.popupWindow = Popup(title="Address QR Code", content=self.show, size_hint=(None,None), size=(280,380))
+        self.popupWindow.open()
+        #self.show.YES.bind(on_press=self.send_tx)
+        self.show.OK.bind(on_release=self.popupWindow.dismiss)
+    
+    def activate_spinner(self):
+        new_addr = True
+    
     
         
         

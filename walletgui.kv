@@ -1,6 +1,10 @@
 WindowManager:
     MainScreen:
     SendScreen:
+    ReceiveScreen:
+
+<ToggleSpinner@Spinner+ToggleButton>:
+    #size_hint: 1, 1
 
 <MainScreen>:  
     id: main
@@ -99,6 +103,9 @@ WindowManager:
                             width: 2.1
                             rectangle: self.x, self.y, self.width, self.height
                     text: 'RECEIVE'
+                    on_press:
+                        app.root.current = "Receive"
+                        root.manager.transition.direction = "left"
 
                 Button:
                     size_hint: 1, 1
@@ -245,7 +252,94 @@ WindowManager:
                     app.root.current = "Main"
                     root.manager.transition.direction = "right"  
                     
-                   
+<ReceiveScreen>:
+    id: receive
+    name: "Receive"
+    
+    BoxLayout:
+        orientation: "vertical"
+        padding: [20,20,20,20]
+        spacing:20
+        
+        Label:
+            size_hint: 1,0.05
+            text: "Choose an Address source:"
+            multiline: True
+        
+        BoxLayout:
+            orientation: "vertical"
+            padding: [20,20,20,20]
+            spacing:20
+            size_hint: 1, 1
+            
+            canvas:
+                Color:
+                    rgba: (0,1,0,1)
+                Line:
+                    width: 2.1
+                    rectangle: self.x, self.y, self.width, self.height
+        
+            
+            
+            ToggleButton:
+                id: existing_addr
+                group: "address_source"
+                size_hint: 1,1
+                size: 280, 100
+                text: "From Existing Unused Adrress"
+                multiline: True
+
+            Label:
+                size_hint: 1,0.05
+            Label:
+                size_hint: 1, 0.2
+                valign:"bottom"
+                text: "From New Adrress:"
+
+            ToggleSpinner:
+                id: new_addr
+                group: "address_source"
+                size_hint: 1, 1
+                size: 280, 100
+                #pos_hint: {'center': (.5, .5)}
+                text: 'P2PKH (default)'
+                values: 'P2PKH (default)', 'P2WPKH','P2SH_P2WPKH'
+                on_press: 
+                    #receive.activate_spinner()
+                on_value:
+                    #print: "The spinner {} has text {}".format(self, self.value)
+                    
+        Label:
+            size_hint: 1,0.5
+            text: "Now, Press 'Show QR Code',\nor choose any other option.'"
+            halign: "center"
+            multiline: True
+            
+        Button:
+            size_hint: 1,0.4
+            size: 280, 100
+            text:"Show QR Code"
+            on_press: receive.qr_popup()        
+        
+        
+        Button:
+            size_hint: 1,0.2
+            size: 280, 100
+            padding: 0,50
+            text:"GO BACK"
+            on_press:
+                app.root.current = "Main"
+                root.manager.transition.direction = "right"  
+                
+        Button:
+            size_hint: 1,0.2
+            size: 280, 100
+            text:"INFO"
+            #on_press: POPUP INFO
+        
+
+
+
 #<ConfirmSendPopup>:
     #id: confirm_tx
     #Label:
@@ -274,3 +368,7 @@ WindowManager:
         #text: "YES"
         #on_release: root.exit()
         #on_release: root.root.cancel_tx()
+        
+        
+
+    
