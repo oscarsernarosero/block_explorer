@@ -49,7 +49,10 @@ First make sure the Neo4j database is running. Then  and then simply open the fi
 
 This is how chunks of the blockchain looks like in a graph database:
 
-![Parsed blockchain](images/01.png)
+
+
+<img src="images/01.png" width="800"/> 
+
 
 - Red nodes: blocks
 - Brown nodes: transactions
