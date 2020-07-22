@@ -2,15 +2,15 @@
 
 This is a project still in the developing phase.
 
-This is project aims to be a Bitcoin block explorer with an API which is going to be used in the other project repository Blockchain specifically for the Bitcoin Wallet.
+This is project aims to be a Bitcoin block explorer with an API which is going to be used by the Blockchain project repository, specifically for the Bitcoin Wallet.
 
 ## Description
 
-The Bitcoin blockchain is built on binary files which include a certain number of blocks. Each block contains transactions, which also contains the Bitcoins. In this way, the blockchain knows how many bitcoins are available and how they can be spent. However, due to space efficiency reasons, the blockchain can't be queried directly since it is binary information concatenated together. 
+The Bitcoin blockchain is stored on binary files which include a certain number of blocks. Each block contains transactions, which also contains the Bitcoins. In this way, the blockchain knows how many bitcoins are available and how they can be spent. However, due to space efficiency reasons, the blockchain can't be queried directly since it is compact binary information concatenated together. 
 
-In order for somebody to interprete these binary files, it is necessary to decode these files into transactions, and blocks, according to the guidelines offered by the Bitcoin-core project.
+In order for somebody to interprete these binary files, it is necessary to decode these files into transactions, and blocks, according to the guidelines offered by the Bitcoin-core project https://en.bitcoin.it/wiki/Protocol_documentation.
 
-In this order of ideas, this project decodes these binary files of the blockchain locally, and then creates a graph database that stores the whole interpreted blockchain. The purpose of this transition, is to be able to query the blockchain to conduct transactions, retrieve balances, etc. in a timely manner.
+In this order of ideas, this project decodes these binary files of the blockchain locally, and then creates a graph database that stores the whole interpreted blockchain. The purpose of this transition, is to be able to query the blockchain to build and validate transactions, retrieve balances from different addresses or wallets, etc.
 
 After, the blockchain is totally parsed into a graph database, we can serve this database to be queried by any client with the credentials to query the blockchain.
 
@@ -45,7 +45,7 @@ After, the blockchain is totally parsed into a graph database, we can serve this
 
 This project is still in the prototype phase, but it is still possible to parse a big chunk of the Bitcoin blockchain. 
 
-First make sure the Neo4j database is running. Then  and then simply open the file block_parser.ipynb and make sure to change the user and password for the database to your own. After that, simply run the first 7 cells of the Jupyter notebook. 
+First make sure the Neo4j database is running. Then simply open the file block_parser.ipynb, and make sure to change the user and password for the database to your own. Also, make sure that the parser will point to where you are storing the Bitcoin blockchain (blk****.dat files). After that, simply run the first 7 cells of the Jupyter notebook. 
 
 This is how chunks of the blockchain looks like in a graph database:
 
