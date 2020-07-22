@@ -16,11 +16,11 @@ After, the blockchain is totally parsed into a graph database, we can serve this
 
 ## Technical General Context
 
-1. This project needs to have access to the whole Bitcoin blockchain. In other words, this relies on a Full Bitcoin Node. Right this moment, this project is being implemented on Raspberry Pies to run a full node and also decode and store the blockchain into a graph database.
+1. This project relies on a Full Bitcoin Node to operate. This project is being implemented on Raspberry Pies to run the full node, and also to decode and store the blockchain into a graph database.
 
-2. This project needs a lot of computing resources in order to conduct the blockchain parsing in a timely manner. In this moment, a Raspberry Pi cluster is being implemented to conduct this parsing taking advantage of multiprocessing, multithreading, and concurrency.
+2. This project needs a considerable amount of computing resources in order to conduct the blockchain parsing in a timely manner. This is why a Raspberry Pi cluster is being implemented to carry out this parsing in order to take advantage of multiprocessing, multithreading, and concurrency for efficiency purposes.
 
-3. The type of database used in this project is a graph database called Neo4j. The reason for this selection is that a graph database is a natural fit for this project.
+3. The type of database used in this project is a graph database called Neo4j. The reason for this selection is that a graph database is a natural fit for this project since the atomic unit of the blockchain and the graph databse is the transaction.
 
 ## Requirements
 
