@@ -51,8 +51,7 @@ This is how chunks of the blockchain looks like in a graph database:
 
 
 
-<img src="images/01.png" width="800"/> 
-
+<img src="Images/01.png" width="600" height="234" /> 
 
 - Red nodes: blocks
 - Brown nodes: transactions
