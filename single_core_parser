@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+
+import argparse
+import parser
+
+arg_parser = argparse.ArgumentParser(description='Single core blockchain parser.')
+
+arg_parser.add_argument('file_index', metavar='N', type=int, nargs=1,
+                   help='The index of the blk#####.dat file')
+arg_parser.add_argument('number_of_threats', metavar='N', type=int, nargs=1,
+                   help='number of threats or files to parse at the same time.')
+
+
+args = arg_parser.parse_args()
+print(args.file_index, args.number_of_threats)
+
+parser.manager((args.file_index[0],args.number_of_threats[0]))
