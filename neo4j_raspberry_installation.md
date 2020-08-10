@@ -51,9 +51,14 @@ neo4j   hard    nofile  40000
 ```
 CTRL + X to exit the nano editor. Press Y to save the changes, and press ENTER to confirm. 
 
+Also, if this doesn't work for you, try simply 
+
+```ulimit -n 40000```
+
 It's time to make sure that our database is going to be stored in our desired directory. First, let's create our folder:
 ```
-touch DBs
+cd ..
+mkdir DBs
 ```
 *Please note that I am naming this folder "DBs", but you can name it however you want. Just try to avoid spaces!*
 
@@ -89,7 +94,7 @@ CTRL + X to exit the editor. Press Y to save changes, and press ENTER to confirm
 One last step. Let's make sure that our modifications are going to be applied by telling Raspbian that our home directory for Neo4j is the one we just setup:
 
 ```
-export NEO4J_HOME = MY_PATH/NEO4J/neo4j-community-4.0.3
+export NEO4J_HOME=MY_PATH/NEO4J/neo4j-community-4.0.3
 export PATH=$NEO4J_HOME/bin:$PATH
 ```
 *Remember to change MY_PATH for your actual directory path*
