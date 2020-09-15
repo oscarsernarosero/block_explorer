@@ -55,12 +55,14 @@ class BlockChainDB(object):
     def _new_tx(tx,block_id, version, locktime, tx_id, inputs, outputs, segwit, i):
         _outputs = []
         _inputs = []
-        
+        address, addr_type = encode_address(output.script_pubkey)
         for index,output in enumerate(outputs):
             output = {
                 "index":index,
                 "script_pubkey" : output.script_pubkey.hex(),
                 "amount" : output.amount,
+                "address" : address,
+                "type" : addr_type
             }
             _outputs.append(output)
             
@@ -89,6 +91,7 @@ class BlockChainDB(object):
         query+= "FOREACH (output in $outputs | \n"
         query+= "MERGE (o:output {index:output.index})<-[:CREATES]-(t) \n"
         query+= "SET o.amount=output.amount, o.script_pubkey=output.script_pubkey \n"
+        
         query+= ") \n"
         query+= "FOREACH (input in $inputs | \n"
         query+= "MERGE (prev_trans: transaction {id:input.prev_tx}) \n"
@@ -99,6 +102,35 @@ class BlockChainDB(object):
         result = tx.run(query,tx_id=tx_id, segwit=segwit, version=version, locktime=locktime, 
                         inputs=_inputs, outputs=_outputs, block_id=block_id, i=i)
         
+        def encode_address(self,_script_pubkey):
+            address = ""
+            addr_type = ""
+            length = encode_varint(len(_script_pubkey))
+            stream = BytesIO(length+_script_pubkey)
+            #stream = BytesIO(_script_pubkey)
+            try: 
+                script_pubkey = Script.parse(stream)
+            
+                if script_pubkey.is_p2pkh_script_pubkey(): 
+                    address= h160_to_p2pkh_address(script_pubkey.cmds[2], testnet)
+                    addr_type = "P2PKH"
+                elif script_pubkey.is_p2sh_script_pubkey():  
+                    address= h160_to_p2sh_address(script_pubkey.cmds[1], testnet)
+                    addr_type = "P2SH"
+                elif script_pubkey.is_p2wpkh_script_pubkey() or script_pubkey.is_p2wsh_script_pubkey(): 
+                    if testnet: address = segwit_addr.encode("tb",0,script_pubkey.cmds[1])
+                    else: address = segwit_addr.encode("bc",0,script_pubkey.cmds[1]) 
+                    if script_pubkey.is_p2wpkh_script_pubkey(): addr_type = "P2WPKH"
+                    else: addr_type = "P2WSH"
+                elif len(script_pubkey.cmds)==2 and script_pubkey.cmds[1]==0xac:
+                    try: 
+                        address = script_pubkey.cmds[0].hex()
+                        addr_type = "P2PK"
+                    except: app_log.info(f"P2PK failed {script_pubkey.cmds[0]} from tx: {output['t.id']}")
+
+            except: app_log.info(f"script parsing failed in tx {output['t.id']} index {output['x.index']} ")
+            
+            return address, addr_type
 
         return True
     

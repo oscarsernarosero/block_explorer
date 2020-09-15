@@ -114,11 +114,11 @@ class AddAddresses(object):
     def create_addresses(self,node,core):
         nodes=4
         cores=4
-        for batch in range(1800000//(nodes*cores)):
+        for i in range(1800000//(nodes*cores)):
             batch = (node-1)*cores + nodes*cores*i + (core-1)
             self.create_address_batch(batch)
             app_log.info(f"batch {batch} from node {node}, core {core}")
         
 def main(node,core):
-    db = AddAddresses("neo4j://localhost:7687", "neo4j", "wallet")
+    db = AddAddresses("neo4j://10.0.0.52:7687", "neo4j", "wallet")
     db.create_addresses(node=1,core=1)
