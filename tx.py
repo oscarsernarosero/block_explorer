@@ -582,7 +582,7 @@ class TxIn:
         else:
             self.script_sig = script_sig
         self.sequence = sequence
-        self.witness = b'\x00'
+        self.witness = [b'\x00']
 
     def __repr__(self):
         return '{}:{}'.format(
