@@ -16,7 +16,7 @@ app_log.setLevel(logging.INFO)
 
 app_log.addHandler(my_handler)
 
-class FixCoinbaseTx(object):
+class AddHeight(object):
 
     def __init__(self, uri=None, user=None, password=None, driver=None):
         if driver is None:
@@ -51,7 +51,7 @@ class FixCoinbaseTx(object):
         
     def add_height(self, block_id=None):
         #If no specific block to start from, then we start with the genesis block.
-        if block_id is None: block_id="000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"
+        if block_id is None: block_id="0000000000000000000000000000000000000000000000000000000000000000"
             
         for i in range(2000):
             print(i)
@@ -60,6 +60,6 @@ class FixCoinbaseTx(object):
             
         
 def main(block_id=None):
-    db = FixCoinbaseTx("neo4j://localhost:7687", "neo4j", "wallet")
+    db = AddHeight("neo4j://localhost:7687", "neo4j", "wallet")
     db.add_height(block_id)
         
