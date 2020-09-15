@@ -1,11 +1,27 @@
 from time import sleep
 from neo4j import GraphDatabase
+
+from script import Script
+from io import BytesIO
+from helper import (
+    decode_base58,
+    encode_base58_checksum,
+    encode_varint,
+    h160_to_p2pkh_address,
+    h160_to_p2sh_address,
+    int_to_little_endian,
+    little_endian_to_int,
+    read_varint,
+    sha256,
+)
+import segwit_addr
+
 import logging
 from logging.handlers import RotatingFileHandler
 
 log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
 
-logFile = 'log/coinbase_fix.log'
+logFile = 'log/add_address.log'
 
 my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=10*1024*1024,backupCount=6, encoding=None, delay=0)
 my_handler.setFormatter(log_formatter)
