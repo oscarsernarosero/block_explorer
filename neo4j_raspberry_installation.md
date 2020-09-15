@@ -55,6 +55,8 @@ Also, if this doesn't work for you, try simply
 
 ```ulimit -n 40000```
 
+but take into account that this only has effect on your current session.
+
 It's time to make sure that our database is going to be stored in our desired directory. First, let's create our folder:
 ```
 cd ..

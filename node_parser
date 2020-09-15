@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# first argument is the index of the node. 
+# each machine will process 8 files at the same time.
+
+counter=0
+
+while [ $counter -le 400 ]
+do
+    i=$(( $((counter*32)) + $(( $(($1 - 1))*8 )) ))
+    bash node_blockchain_parser $(( $i )) 2
+    ((counter++))
+
+done
+
+echo All done

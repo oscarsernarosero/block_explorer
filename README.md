@@ -28,6 +28,7 @@ After, the blockchain is totally parsed into a graph database, we can serve this
 - Neo4j graph database engine.
 - Neo4j python driver ```pip install neo4j```
 - 4 Terabytes of free space.
+- blockcypher ```pip3 install blockcypher```
 
 # Technical Details
 

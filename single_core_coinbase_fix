@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+
+import argparse
+import coinbase_fix
+
+arg_parser = argparse.ArgumentParser(description='Multi-process coinbase transaction fix.')
+
+arg_parser.add_argument('node_number', metavar='N', type=int, nargs=1,
+                   help='Node number e.i. 1, 2, 3, 4 ... n')
+arg_parser.add_argument('core_number', metavar='N', type=int, nargs=1,
+                   help='core of the the computer to use. If it is a quadcore then it must be between 1 and 4.')
+
+
+args = arg_parser.parse_args()
+print(args.node_number, args.core_number)
+
+coinbase_fix.main((args.node_number[0],args.core_number[0]))
