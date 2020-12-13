@@ -44,9 +44,76 @@ After, the blockchain is totally parsed into a graph database, we can serve this
 
 ## How to use
 
-This project is still in the prototype phase, but it is still possible to parse a big chunk of the Bitcoin blockchain. 
+### Before starting
 
-First make sure the Neo4j database is running. Then simply open the file block_parser.ipynb, and make sure to change the user and password for the database to your own. Also, make sure that the parser will point to where you are storing the Bitcoin blockchain (blk****.dat files). After that, simply run the first 7 cells of the Jupyter notebook. 
+Before starting, please setup the cluster with a file-share sytem:
+
+https://medium.com/@glmdev/building-a-raspberry-pi-cluster-784f0df9afbd
+
+https://magpi.raspberrypi.org/articles/build-a-raspberry-pi-cluster-computer
+
+### Setting up the parser
+
+First make sure the Neo4j database is running on your computer which is going to host the graph database:
+
+``` 
+cd <new4j/path>/bin>
+./neo4j start
+```
+
+Make sure you have enough space for the blockchain. Also, make sure that Neo4j *data* is pointing to the right place to store the blockchain (your SD card, for example).
+
+Now, just wait a couple minutes while the server is up and running. To verify when it is running, simply go to a browser and go to the domain *localhost:7474*. Depending on the size of the blockchain, this can take several minutes (15min+)
+
+Meanwhile, go to the raspberry pies. Make sure you are logged in on all of them. Now, let's share the files from the bitcoin node. 
+
+In the raspberry pi that holds the bitcoin node, export the folders *bitcoin* and *block_explorer* like this (this is assuming you have already setup the exporting/importing process for file-share system in the local network. More details on this comming soon for the documentation. For now, visit ):
+
+```
+sudo exportfs -a
+```
+
+And that's it for the bitcoin node. Go to each one of the other raspberry pies and repeat the same following process to access the *bitcoin* and the *bock_explorer* folder:
+
+```
+sudo mount 10.0.0.248:/home/bitcoin_node_serna/Documents/block_explorer ~/Documents/block_explorer 
+sudo chown nobody.nogroup ~/Documents/block_explorer
+sudo chmod -R 777 ~/Documents/block_explorer
+sudo mount 10.0.0.248:/home/bitcoin_node_serna/.bitcoin ~/bitcoin
+cd ~/Documents/block_explorer
+```
+
+Change \<10.0.0.248\> for the ip of your bitcoin node in the local network. Also change \</home/bitcoin_node_serna/Documents/block_explorer\> and \<~/Documents/block_explorer\> for the actual directory inside your bitcoin node for the folders *bitcoin* and *block_explorer*. If you don't have a folder called *Documents* on your home directories inside your raspberry pies that are not the node, simply create one ``` mkdir ~/Documents ``` and then repeat the process if necessary.
+
+Now, take a look to the ip address of the server. For mac, just do ```ifconfig```. Open the file *parser.py* in the *block_explorer* folder inside your bitcoin node or any other raspberry pi. Replace the ip address (keep the port ':7687') in the method *manager()* with the ip address of the server (your computer).
+
+It is time to start the parser on each raspberry pi. Number each one of them starting from 1. Then, depending on the number you assigned them, run the following line in the terminal of each raspberry pi:
+
+```sudo nohup bash node_parser <n> &  ```
+
+*replace '\<n\>' with the number you assigned to each raspberry pi (1-4)
+
+Tip: Since we are using *nohup* for the parser, a useful tool you can use to monitor the activity of your raspberry pi is ```htop```.
+
+This process can take several weeks to complete. Once it is finished. It is time to add the height for the blocks:
+
+``` sudo python3 add_height_script ```
+
+If you have to stop the process of adding height to the blocks for some reason, and want to pick up where you stopped, the script *add_height_script* has an option to pass the id of the block where you want to pick up the work from:
+
+``` sudo python3 add_height_script -b <block_id> ``` or its long version: ``` sudo python3 add_height_script --block_id <block_id>  ```
+
+*Note: replace the \<block_id\> for the actual id of the block.*
+
+After adding the height to the whole block chain, it is necessary to stay listenning for new coming blocks. To do this, check out the folder *cursors* in the directory *block_explorer*. Look for the highest index of those files (exclude the leading zeros). And then:
+
+``` sudo python3 single_core_parser  <highest_index>  1```
+
+*Note: replace the \<highest_index\> for the actual index you found to be the highest among the cursor files.*
+
+This should activate the *continous* mode of the parser. This last step will add the height of the latest blocks, and will process automatically every block as it comes. This will also deal with stale blocks live.
+
+That's it!
 
 This is how chunks of the blockchain looks like in a graph database:
 

@@ -37,6 +37,7 @@ class FixCoinbaseTx(object):
                             "MERGE (b)-[c:COINBASE {witness:wit, script_sig:script_sig}]->(coinbase) "
                             "DELETE s",height=height)
             app_log.info(f"Fixed coinbase transaction for block with heigh {height}")
+            return
         
     def fix_blocks_batch(self,batch):
         with self._driver.session() as session:
@@ -44,10 +45,10 @@ class FixCoinbaseTx(object):
             #print(result)
             return 
         
-    def fix_blocks(self,node, core):
-        nodes=4
-        cores=4
-        for i in range(8,400):
+    def fix_blocks(self,db,node, core):
+        nodes=1
+        cores=1
+        for i in range(400):
             print(f"batch {i} for core {core} in node {node}.")
             batch = (node-1)*cores + nodes*cores*i + (core-1)
             self.fix_blocks_batch(batch)
@@ -55,5 +56,5 @@ class FixCoinbaseTx(object):
         
 def main(node,core):
     db = FixCoinbaseTx("neo4j://localhost:7687", "neo4j", "wallet")
-    db.fix_blocks(node=1,core=1)
+    db.fix_blocks(db,node,core)
         

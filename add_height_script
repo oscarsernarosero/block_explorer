@@ -1,0 +1,15 @@
+#!/usr/bin/python3
+
+import argparse
+import add_height
+
+arg_parser = argparse.ArgumentParser(description='Multi-process coinbase transaction fix.')
+
+arg_parser.add_argument("-b", "--block_id", help="starting to add height from block with ID:", type=str, 
+                        default="0000000000000000000000000000000000000000000000000000000000000000")
+
+
+args = arg_parser.parse_args()
+print(args.block_id)
+
+add_height.main(args.block_id)
